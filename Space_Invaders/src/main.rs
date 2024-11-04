@@ -1,12 +1,19 @@
+mod game;
+
 use bevy::prelude::*;
+use crate::game::GamePlugin;
 
 fn main() {
     App::new()
-        .add_systems(Startup, helloWorld)
+        .add_plugins(DefaultPlugins)
+        .add_plugins(GamePlugin)
         .run();
 }
 
-
-fn helloWorld(){
-    println!("Hello, world!");
+#[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+pub enum AppState {
+    #[default]
+    MainMenu,
+    Game,
+    GameOver,
 }
