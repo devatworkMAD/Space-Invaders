@@ -18,6 +18,10 @@ impl Plugin for PlayerPlugin {
         println!("build PlayerPlugin");
         app
             .add_systems(Startup, spawn_player)
-            .add_systems(Update, player_movement.in_set(MovementSystemSet));
+            .add_systems(Update,
+                         (
+                             player_movement,
+                             confine_player_movement
+                         ).in_set(MovementSystemSet));
     }
 }
