@@ -22,6 +22,12 @@ impl Plugin for PlayerPlugin {
                          (
                              player_movement,
                              confine_player_movement
-                         ).in_set(MovementSystemSet));
+                         ).in_set(MovementSystemSet))
+            .add_systems(Update,
+                         (
+                             spawn_shot,
+                             progress_shot,
+                             despawn_shot
+                             ));
     }
 }
