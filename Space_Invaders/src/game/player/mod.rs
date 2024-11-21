@@ -17,7 +17,9 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         println!("build PlayerPlugin");
         app
-            .add_systems(Startup, spawn_player)
+            .add_systems(Startup, (
+                spawn_player,
+                setup_LastShotTime))
             .add_systems(Update,
                          (
                              player_movement,

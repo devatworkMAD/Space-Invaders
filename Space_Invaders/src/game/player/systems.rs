@@ -1,7 +1,7 @@
+use std::time::Instant;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-
-use super::components::{Player, Shot};
+use crate::game::player::components::{Player, Shot};
 
 pub const PLAYER_SPEED: f32 = 500.0;
 pub const PLAYER_SIZE: f32 = 64.0; // This is the player sprite size.
@@ -71,32 +71,49 @@ pub fn confine_player_movement(
     }
 }
 
+#[derive(Resource)]
+pub struct LastShotTime {
+    last_shot: Instant,
+}
+pub fn setup_LastShotTime(mut commands: Commands) {
+    commands.insert_resource(LastShotTime {
+        last_shot: Instant::now() - std::time::Duration::from_secs(1), // Ensure shots can fire immediately
+    });
+}
+
 pub fn spawn_shot(
     mut commands: Commands,
+    time: Res<Time>,
+    mut last_shot_time: ResMut<LastShotTime>, // Track the time of the last shot
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
     mut player_query: Query<&mut Transform, With<Player>>,
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-){
+    keyboard_input: Res<ButtonInput<KeyCode>>, // Use Input for key presses
+) {
     if let Ok(mut player_transform) = player_query.get_single_mut() {
-        if keyboard_input.pressed(KeyCode::ArrowUp) || keyboard_input.pressed(KeyCode::KeyW) {
-            let window = window_query.get_single().unwrap();
-            let mut translation = player_transform.translation;
+        if keyboard_input.just_pressed(KeyCode::ArrowUp) || keyboard_input.just_pressed(KeyCode::KeyW) {
+            let now = Instant::now();
+            if now.duration_since(last_shot_time.last_shot).as_secs_f32() >= 0.5 {
+                last_shot_time.last_shot = now;
 
-            println!("spawning shot");
-            let window = window_query.get_single().unwrap();
-
-            commands.spawn((
-                SpriteBundle {
-                    transform: Transform::from_xyz(translation.x, translation.y, translation.z),
-                    texture: asset_server.load("player_shot.png"),
-                    ..default()
-                },
-                Shot {},
-            ));
+                let translation = player_transform.translation;
+                commands.spawn((
+                    SpriteBundle {
+                        sprite: Sprite {
+                            ..default()
+                        },
+                        transform: Transform::from_xyz(translation.x, translation.y, translation.z),
+                        texture: asset_server.load("player_shot.png"),
+                        ..default()
+                    },
+                    Shot {},
+                ));
+            }
         }
     }
 }
+
+
 
 pub fn progress_shot(
     mut shot_query: Query<&mut Transform, With<Shot>>,
@@ -106,7 +123,6 @@ pub fn progress_shot(
 
     for mut shot_transform in shot_query.iter_mut() {
         shot_transform.translation.y += time.delta_seconds() * speed;
-        println!("Shot position: {:?}", shot_transform.translation);
     }
 }
 
