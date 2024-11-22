@@ -14,6 +14,7 @@ impl Plugin for DefensePlugin {
     fn build(&self, app: &mut App) {
         println!("build DefensePlugin");
         app
-            .add_systems(Startup, build_defense);
+            .add_systems(Startup, build_defense)
+            .add_systems(Update, hit_detection);
     }
 }
