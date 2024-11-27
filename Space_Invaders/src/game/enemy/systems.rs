@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use bevy::window::PrimaryWindow;
 use crate::game::enemy::components::Enemy;
 
@@ -19,6 +20,7 @@ pub fn spawn_enemy(
                 SpriteBundle {
                     sprite: Sprite {
                         custom_size: Some(Vec2::new(sprite_size, sprite_size)),
+                        anchor: Anchor::BottomLeft,
                         ..default()
                     },
                     transform: Transform::from_xyz(
