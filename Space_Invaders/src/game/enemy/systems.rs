@@ -7,17 +7,32 @@ pub fn spawn_enemy(
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
 ) {
-    println!("spawning enemy");
+    let sprite_size = 32.0;
+    let rows = 5;
+    let columns = 11;
+
     let window = window_query.get_single().unwrap();
 
-    commands.spawn((
-        SpriteBundle {
-            transform: Transform::from_xyz(window.width() * 0.5, window.height() * 0.5, 0.0),
-            texture: asset_server.load("invader.png"),
-            ..default()
-        },
-        Enemy {},
-    ));
+    for row in 0..rows{
+        for column in 0..columns{
+            commands.spawn((
+                SpriteBundle {
+                    sprite: Sprite {
+                        custom_size: Some(Vec2::new(sprite_size, sprite_size)),
+                        ..default()
+                    },
+                    transform: Transform::from_xyz(
+                        (window.width() * 0.5 - (columns as f32 * sprite_size * 0.5)) + sprite_size * column as f32,
+                        100.0 + sprite_size * row as f32,
+                        0.0
+                    ),
+                    texture: asset_server.load("invader.png"),
+                    ..default()
+                },
+                Enemy {},
+            ));
+        }
+    }
 }
 
 pub fn hit_detection(
@@ -54,3 +69,4 @@ pub fn hit_detection(
         }
     }
 }
+
