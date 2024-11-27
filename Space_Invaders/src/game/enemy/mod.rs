@@ -11,6 +11,7 @@ impl Plugin for EnemyPlugin {
         println!("build PlayerPlugin");
         app
             .add_systems(Startup, (
-                spawn_enemy));
+                spawn_enemy))
+            .add_systems(Update, hit_detection);
     }
 }

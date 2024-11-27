@@ -74,7 +74,7 @@ pub fn hit_detection(
                 shot_position.x + shot_size.x > brick_position.x &&
                 shot_position.y < brick_position.y + brick_size.y &&
                 shot_position.y + shot_size.y > brick_position.y) {
-                
+
                 // Collision detected, despawn the brick
                 commands.entity(brick_entity).despawn();
             }
