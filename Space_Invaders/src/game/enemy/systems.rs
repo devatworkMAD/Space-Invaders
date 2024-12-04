@@ -1,3 +1,4 @@
+use std::time::Instant;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use bevy::window::PrimaryWindow;
@@ -25,7 +26,7 @@ pub fn spawn_enemy(
                     },
                     transform: Transform::from_xyz(
                         (window.width() * 0.5 - (columns as f32 * sprite_size * 0.5)) + sprite_size * column as f32,
-                        100.0 + sprite_size * row as f32,
+                        (window.height() - rows as f32 * sprite_size - 2.0 * sprite_size) + sprite_size * row as f32,
                         0.0
                     ),
                     texture: asset_server.load("invader.png"),
@@ -33,6 +34,67 @@ pub fn spawn_enemy(
                 },
                 Enemy {},
             ));
+        }
+    }
+}
+
+
+#[derive(Resource)]
+pub struct Direction {
+    left: bool,
+    switch: bool,
+}
+pub fn setup_Direction(mut commands: Commands) {
+    commands.insert_resource(Direction {
+        left: true,
+        switch: false
+    });
+}
+
+pub fn move_enemy_x(
+    mut enemy_query: Query<(Entity, &mut Transform), With<Enemy>>,
+    time: Res<Time>,
+    mut direction: ResMut<Direction>
+){
+    let speed_x = 10.0;
+
+        for (enemy, mut transform) in enemy_query.iter_mut() {
+            if direction.left {
+                transform.translation.x -= time.delta_seconds() * speed_x;
+            }else{
+                transform.translation.x += time.delta_seconds() * speed_x;
+            }
+        }
+}
+
+pub fn move_enemy_y(
+    mut enemy_query: Query<(&mut Transform, &Sprite), With<Enemy>>,
+    mut direction: ResMut<Direction>
+){
+    if direction.switch{
+        direction.switch = false;
+        for (mut transform, sprite) in enemy_query.iter_mut() {
+            transform.translation.y -= sprite.custom_size.map_or(0.0, |size| size.y) / 2.0;
+        }
+    }
+}
+
+pub fn switch_direction(
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut enemy_query: Query<(&mut Transform, &Sprite), With<Enemy>>,
+    mut direction: ResMut<Direction>
+){
+    if let Ok(window) = window_query.get_single() {
+        for (mut transform, sprite) in enemy_query.iter_mut() {
+            if transform.translation.x <= 0.0{
+                direction.left = false;
+                direction.switch = true;
+            }
+
+            if transform.translation.x >= window.width() - sprite.custom_size.map_or(0.0, |size| size.x){
+                direction.left = true;
+                direction.switch = true;
+            }
         }
     }
 }
