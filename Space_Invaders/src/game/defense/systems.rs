@@ -45,11 +45,13 @@ fn build_wall(
 
 
 use bevy::ecs::system::ParamSet;
+use crate::game::enemy::components::Spit;
+use crate::game::player::components::Shot;
 
-pub fn hit_detection(
+pub fn shot_hit_detection(
     mut commands: Commands, // Allows despawning entities
     mut param_set: ParamSet<(
-        Query<(Entity, &Transform), With<crate::game::player::components::Shot>>, // Immutable query for shots
+        Query<(Entity, &Transform), With<Shot>>, // Immutable query for shots
         Query<(Entity, &Transform), With<Brick>>, // Mutable access to bricks for despawning
     )>,
 ) {
@@ -76,6 +78,41 @@ pub fn hit_detection(
                 // Collision detected, despawn the brick
                 commands.entity(brick_entity).despawn();
                 commands.entity(shot_entity).despawn();
+            }
+        }
+    }
+}
+
+pub fn spit_hit_detection(
+    mut commands: Commands, // Allows despawning entities
+    mut param_set: ParamSet<(
+        Query<(Entity, &Transform), With<Spit>>, // Immutable query for shots
+        Query<(Entity, &Transform), With<Brick>>, // Mutable access to bricks for despawning
+    )>,
+) {
+    // Collect all spit positions into a vector
+    let spit_data: Vec<_> = {
+        let spits = param_set.p0();
+        spits.iter().map(|(entity, transform)| (entity, transform.translation)).collect()
+    };
+    // Now access bricks safely and check for collisions
+    let mut bricks = param_set.p1(); // Scoped mutable borrow for bricks
+    for (spit_entity, spit_position) in spit_data {
+        for (brick_entity, brick_transform) in bricks.iter_mut() {
+            let brick_position = brick_transform.translation;
+
+            // Example collision detection: AABB
+            let spit_size = Vec3::new(2.0, 10.0, 0.0); // Assuming 1x1 size for shot
+            let brick_size = Vec3::new(1.0, 1.0, 0.0); // Example size for brick
+
+            if (spit_position.x < brick_position.x + brick_size.x &&
+                spit_position.x + spit_size.x > brick_position.x &&
+                spit_position.y < brick_position.y + brick_size.y &&
+                spit_position.y + spit_size.y > brick_position.y) {
+
+                // Collision detected, despawn the brick
+                commands.entity(brick_entity).despawn();
+                commands.entity(spit_entity).despawn();
             }
         }
     }

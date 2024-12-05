@@ -1,6 +1,7 @@
 use std::time::Instant;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use crate::game::enemy::components::{Enemy, Spit};
 use crate::game::player::components::{Player, Shot};
 
 pub const PLAYER_SPEED: f32 = 500.0;
@@ -83,9 +84,7 @@ pub fn setup_LastShotTime(mut commands: Commands) {
 
 pub fn spawn_shot(
     mut commands: Commands,
-    time: Res<Time>,
     mut last_shot_time: ResMut<LastShotTime>, // Track the time of the last shot
-    window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
     mut player_query: Query<&mut Transform, With<Player>>,
     keyboard_input: Res<ButtonInput<KeyCode>>, // Use Input for key presses
@@ -129,13 +128,49 @@ pub fn progress_shot(
 pub fn despawn_shot(
     mut commands: Commands,
     shot_query: Query<(Entity, &Transform), With<Shot>>,
+    window_query: Query<&Window, With<PrimaryWindow>>
 ) {
-    let y_threshold = 480.0;
+    let window = window_query.get_single().unwrap();
+    let y_threshold = window.height();
 
     for (entity, transform) in shot_query.iter() {
         if transform.translation.y > y_threshold {
             commands.entity(entity).despawn();
             println!("Despawning shot at position: {:?}", transform.translation);
+        }
+    }
+}
+
+pub fn hit_detection(
+    mut commands: Commands,
+    mut param_set: ParamSet<(
+        Query<(Entity, &Transform), With<Spit>>,
+        Query<(Entity, &Transform), With<Player>>,
+    )>,
+) {
+    let spit_data: Vec<_> = {
+        let spits = param_set.p0();
+        spits.iter().map(|(entity, transform)| (entity, transform.translation)).collect()
+    };
+
+    let mut player = param_set.p1();
+    for (spit_entity, spit_position) in spit_data {
+        for (player_entity, player_transform) in player.iter_mut() {
+            let player_position = player_transform.translation;
+
+            let shot_size = Vec3::new(2.0, 10.0, 0.0);
+            let player_size = Vec3::new(32.0, 32.0, 0.0);
+
+            if (spit_position.x < player_position.x + player_size.x &&
+                spit_position.x + shot_size.x > player_position.x &&
+                spit_position.y < player_position.y + player_size.y &&
+                spit_position.y + shot_size.y > player_position.y) {
+
+                commands.entity(player_entity).despawn();
+                commands.entity(spit_entity).despawn();
+
+                break;
+            }
         }
     }
 }

@@ -29,7 +29,8 @@ impl Plugin for PlayerPlugin {
                          (
                              spawn_shot,
                              progress_shot,
-                             despawn_shot
+                             despawn_shot,
+                             hit_detection
                              ));
     }
 }

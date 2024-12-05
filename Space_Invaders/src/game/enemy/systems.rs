@@ -2,7 +2,9 @@ use std::time::Instant;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use bevy::window::PrimaryWindow;
-use crate::game::enemy::components::Enemy;
+use rand::Rng;
+use crate::game::enemy::components::{Enemy, Spit};
+use crate::game::player::components::Shot;
 
 pub fn spawn_enemy(
     mut commands: Commands,
@@ -133,4 +135,69 @@ pub fn hit_detection(
     }
 }
 
+#[derive(Resource)]
+pub struct LastSpitTime {
+    last_shot: Instant,
+}
+pub fn setup_LastSpitTime(mut commands: Commands) {
+    commands.insert_resource(LastSpitTime {
+        last_shot: Instant::now() - std::time::Duration::from_secs(1), // Ensure shots can fire immediately
+    });
+}
+pub fn spawn_spit(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut last_spit_time: ResMut<LastSpitTime>, // Track the time of the last shot
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    asset_server: Res<AssetServer>,
+    mut enemy_query: Query<&mut Transform, With<Enemy>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>, // Use Input for key presses
+) {
+    let mut rng = rand::thread_rng();
+    for (enemy_transform) in enemy_query.iter_mut() {
+            let now = Instant::now();
+            if now.duration_since(last_spit_time.last_shot).as_secs_f32() >= rng.gen_range(0.5..1.0) {
+                last_spit_time.last_shot = now;
+
+                let translation = enemy_transform.translation;
+                commands.spawn((
+                    SpriteBundle {
+                        sprite: Sprite {
+                            ..default()
+                        },
+                        transform: Transform::from_xyz(translation.x, translation.y, translation.z),
+                        texture: asset_server.load("spit.png"),
+                        ..default()
+                    },
+                    Spit {},
+                ));
+            }
+
+    }
+}
+
+pub fn progress_spit(
+    mut spit_query: Query<&mut Transform, With<Spit>>,
+    time: Res<Time>,
+){
+    let speed = 400.0;
+
+    for mut shot_transform in spit_query.iter_mut() {
+        shot_transform.translation.y -= time.delta_seconds() * speed;
+    }
+}
+
+pub fn despawn_shot(
+    mut commands: Commands,
+    spit_query: Query<(Entity, &Transform), With<Spit>>,
+) {
+    let y_threshold = 0.0;
+
+    for (entity, transform) in spit_query.iter() {
+        if transform.translation.y < y_threshold {
+            commands.entity(entity).despawn();
+            println!("Despawning spit at position: {:?}", transform.translation);
+        }
+    }
+}
 

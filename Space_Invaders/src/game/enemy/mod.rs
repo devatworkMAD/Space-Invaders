@@ -9,7 +9,19 @@ impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
         println!("build PlayerPlugin");
         app
-            .add_systems(Startup, (spawn_enemy, setup_Direction))
-            .add_systems(Update, (hit_detection, move_enemy_x, switch_direction, move_enemy_y));
+            .add_systems(Startup, (
+                spawn_enemy,
+                setup_Direction,
+                setup_LastSpitTime
+            ))
+            .add_systems(Update, (
+                hit_detection,
+                move_enemy_x,
+                switch_direction,
+                move_enemy_y,
+                spawn_spit,
+                progress_spit,
+                despawn_shot
+            ));
     }
 }

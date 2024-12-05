@@ -15,6 +15,9 @@ impl Plugin for DefensePlugin {
         println!("build DefensePlugin");
         app
             .add_systems(Startup, build_defense)
-            .add_systems(Update, hit_detection);
+            .add_systems(Update, (
+                shot_hit_detection,
+                spit_hit_detection
+            ));
     }
 }
