@@ -11,3 +11,29 @@ pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<Pr
         ..default()
     });
 }
+
+pub fn transition_to_game_state(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    app_state: Res<State<AppState>>,
+    mut app_state_next_state: ResMut<NextState<AppState>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyG) {
+        if !app_state.eq(&AppState::Game) {
+            app_state_next_state.set(AppState::Game);
+            println!("Entered AppState::Game");
+        }
+    }
+}
+
+pub fn transition_to_main_menu_state(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    app_state: Res<State<AppState>>,
+    mut app_state_next_state: ResMut<NextState<AppState>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyM) {
+        if !app_state.eq(&AppState::MainMenu) {
+            app_state_next_state.set(AppState::MainMenu);
+            println!("Entered AppState::MainMenu");
+        }
+    }
+}

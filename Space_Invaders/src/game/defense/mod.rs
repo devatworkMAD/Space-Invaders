@@ -4,8 +4,7 @@ mod systems;
 use systems::*;
 
 use bevy::prelude::*;
-
-
+use crate::AppState;
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct DefenseSystemSet;
@@ -18,6 +17,6 @@ impl Plugin for DefensePlugin {
             .add_systems(Update, (
                 shot_hit_detection,
                 spit_hit_detection
-            ));
+            ).run_if(in_state(AppState::Game)));
     }
 }

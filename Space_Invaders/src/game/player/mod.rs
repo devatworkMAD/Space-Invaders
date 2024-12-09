@@ -4,6 +4,7 @@ mod systems;
 use systems::*;
 
 use bevy::prelude::*;
+use crate::AppState;
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct MovementSystemSet;
@@ -24,13 +25,13 @@ impl Plugin for PlayerPlugin {
                          (
                              player_movement,
                              confine_player_movement
-                         ).in_set(MovementSystemSet))
+                         ).in_set(MovementSystemSet).run_if(in_state(AppState::Game)))
             .add_systems(Update,
                          (
                              spawn_shot,
                              progress_shot,
                              despawn_shot,
                              hit_detection
-                             ));
+                             ).run_if(in_state(AppState::Game)));
     }
 }

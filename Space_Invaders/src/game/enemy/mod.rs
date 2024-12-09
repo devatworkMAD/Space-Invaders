@@ -2,6 +2,7 @@ pub(crate) mod components;
 mod systems;
 
 use bevy::prelude::*;
+use crate::AppState;
 use crate::game::enemy::systems::*;
 
 pub struct EnemyPlugin;
@@ -22,6 +23,6 @@ impl Plugin for EnemyPlugin {
                 spawn_spit,
                 progress_spit,
                 despawn_shot
-            ));
+            ).run_if(in_state(AppState::Game)));
     }
 }

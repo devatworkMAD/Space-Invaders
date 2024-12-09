@@ -5,7 +5,7 @@ use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy::window::{PresentMode, WindowTheme};
 use crate::game::GamePlugin;
-use crate::systems::spawn_camera;
+use crate::systems::{spawn_camera, transition_to_game_state, transition_to_main_menu_state};
 
 fn main() {
     App::new()
@@ -34,8 +34,13 @@ fn main() {
             LogDiagnosticsPlugin::default(),
             FrameTimeDiagnosticsPlugin,
         ))
+        .init_state::<AppState>()
         .add_plugins(GamePlugin)
         .add_systems(Startup, spawn_camera)
+        .add_systems(Update, (
+            transition_to_game_state,
+            transition_to_main_menu_state
+            ))
         .run();
 }
 
