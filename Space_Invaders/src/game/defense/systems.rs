@@ -34,7 +34,7 @@ fn build_wall(
                         row as f32 + y * 0.05,
                         0.0,
                     ),
-                    texture: asset_server.load("Pixel.png"),
+                    texture: asset_server.load("sprites/Pixel.png"),
                     ..default()
                 },
                 Brick {},

@@ -18,7 +18,7 @@ pub fn spawn_player(
     commands.spawn((
         SpriteBundle {
             transform: Transform::from_xyz(window.width() * 0.5, window.height() * 0.05, 0.0),
-            texture: asset_server.load("ship.png"),
+            texture: asset_server.load("sprites/ship.png"),
             ..default()
         },
         Player {},
@@ -102,7 +102,7 @@ pub fn spawn_shot(
                             ..default()
                         },
                         transform: Transform::from_xyz(translation.x, translation.y, translation.z),
-                        texture: asset_server.load("player_shot.png"),
+                        texture: asset_server.load("sprites/player_shot.png"),
                         ..default()
                     },
                     Shot {},

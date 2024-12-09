@@ -31,7 +31,7 @@ pub fn spawn_enemy(
                         (window.height() - rows as f32 * sprite_size - 2.0 * sprite_size) + sprite_size * row as f32,
                         0.0
                     ),
-                    texture: asset_server.load("invader.png"),
+                    texture: asset_server.load("sprites/invader.png"),
                     ..default()
                 },
                 Enemy {},
@@ -166,7 +166,7 @@ pub fn spawn_spit(
                             ..default()
                         },
                         transform: Transform::from_xyz(translation.x, translation.y, translation.z),
-                        texture: asset_server.load("spit.png"),
+                        texture: asset_server.load("sprites/spit.png"),
                         ..default()
                     },
                     Spit {},
