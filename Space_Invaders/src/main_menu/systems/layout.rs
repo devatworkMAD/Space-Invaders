@@ -18,6 +18,7 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
         .spawn((
             NodeBundle {
                 style: main_menu_style(),
+                background_color: BACKGROUND_COLOR.into(),
                 ..default()
             },
             MainMenu {},
@@ -34,7 +35,7 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
                     parent.spawn(TextBundle {
                         text: Text {
                             sections: vec![TextSection::new(
-                                "Bevy Ball Game",
+                                "Space Invaders",
                                 get_title_text_style(&asset_server),
                             )],
                             justify: JustifyText::Center,

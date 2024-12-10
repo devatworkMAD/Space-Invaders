@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+pub const BACKGROUND_COLOR: Color = Color::rgb(0.10, 0.10, 0.10);
 pub const NORMAL_BUTTON_COLOR: Color = Color::rgb(0.15, 0.15, 0.15);
 pub const HOVERED_BUTTON_COLOR: Color = Color::rgb(0.25, 0.25, 0.25);
 pub const PRESSED_BUTTON_COLOR: Color = Color::rgb(0.35, 0.75, 0.35);
@@ -26,16 +27,6 @@ pub fn button_style() -> Style {
         ..Style::DEFAULT
     }
 }
-
-pub fn image_style() -> Style {
-    Style {
-        width: Val::Px(64.0),
-        height: Val::Px(64.0),
-        margin: UiRect::new(Val::Px(8.0), Val::Px(8.0), Val::Px(8.0), Val::Px(8.0)),
-        ..Style::DEFAULT
-    }
-}
-
 pub fn title_style() -> Style {
     Style {
         flex_direction: FlexDirection::Row,

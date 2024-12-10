@@ -12,7 +12,7 @@ pub fn interact_with_play_button(
     >,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if let Ok((interaction, mut background_color)) = button_query.get_single_mut() {
+    for((interaction, mut background_color)) in &mut button_query {
         match *interaction {
             Interaction::Pressed => {
                 *background_color = PRESSED_BUTTON_COLOR.into();
@@ -36,7 +36,7 @@ pub fn interact_with_quit_button(
         (Changed<Interaction>, With<QuitButton>),
     >,
 ) {
-    if let Ok((interaction, mut background_color)) = button_query.get_single_mut() {
+    for((interaction, mut background_color)) in &mut button_query {
         match *interaction {
             Interaction::Pressed => {
                 *background_color = PRESSED_BUTTON_COLOR.into();
