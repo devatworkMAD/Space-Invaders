@@ -15,7 +15,7 @@ impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             // OnEnter State Systems
-            .add_systems(Update, spawn_main_menu).init_schedule(OnEnter(AppState::MainMenu))
+            .add_systems(OnEnter(AppState::MainMenu), spawn_main_menu)
             // Systems
             .add_systems(Update, (
                 interact_with_play_button,
